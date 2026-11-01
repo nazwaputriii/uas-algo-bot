@@ -23,3 +23,4 @@ NOW = time.time()
 
 
 def stamp():
+    return dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds")
