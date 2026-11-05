@@ -1,0 +1,15 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard Bot Dry Run Indodax</title>
+<style>body{font-family:system-ui,sans-serif;margin:16px;max-width:900px}h1{font-size:20px}.g{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}.k{border:1px solid #8884;border-radius:8px;padding:8px}.k b{display:block;font-size:18px}table{border-collapse:collapse;width:100%;font-size:12px}td,th{border-bottom:1px solid #8883;padding:3px;text-align:left}</style></head><body>
+<h1>Bot Dry Run Indodax (data dari log mentah)</h1><div class="g" id="k"></div><h3>Equity harian</h3><svg id="s" viewBox="0 0 600 160" width="100%"></svg>
+<h3>Order simulasi</h3><div style="overflow-x:auto"><table id="o"></table></div><h3>Panel operasional</h3><div class="g" id="p"></div>
+<script>
+const f=(x,d=2)=>x==null?'-':(+x).toFixed(d),pc=x=>x==null?'-':f(x*100)+'%';
+fetch('/api/data').then(r=>r.json()).then(d=>{const m=d.metrik;
+const K=(a,b)=>`<div class="k">${a}<b>${b}</b></div>`;
+k.innerHTML=K('Return total',pc(m.return_total))+K('Max drawdown',pc(m.mdd))+K('Jumlah trade',m.n_trade)+K('Profit factor',f(m.profit_factor))+K('Win rate',pc(m.win_rate))+K('Rata untung (Rp)',f(m.rata_untung,0))+K('Rata rugi (Rp)',f(m.rata_rugi,0))+K('Porsi biaya',pc(m.porsi_biaya))+K('Buy&hold BTC',pc(m.benchmark_btc_buy_hold));
+p.innerHTML=K('Uptime',pc(m.uptime)+' ('+m.candle_tepat+'/'+m.candle_total+')')+K('Panggilan',m.panggilan_terlaksana+'/'+m.panggilan_terjadwal)+K('Error API',m.error_api)+K('Kill switch dipakai',m.kill_switch_dipakai);
+const e=m.equity_harian.map(x=>x[1]);if(e.length>1){const lo=Math.min(...e),hi=Math.max(...e);s.innerHTML='<polyline fill="none" stroke="#2a7" stroke-width="2" points="'+e.map((v,i)=>(i/(e.length-1)*600)+','+(150-(v-lo)/((hi-lo)||1)*140)).join(' ')+'"/>';}
+const od=d.events_terakhir.filter(x=>x.t=='order');o.innerHTML='<tr><th>waktu</th><th>pair</th><th>sisi</th><th>qty</th><th>bid</th><th>ask</th><th>fill</th><th>vs sinyal %</th><th>fee Rp</th></tr>'+od.map(x=>`<tr><td>${x.waktu}</td><td>${x.pair}</td><td>${x.sisi}</td><td>${x.qty}</td><td>${x.best_bid}</td><td>${x.best_ask}</td><td>${f(x.harga_fill,0)}</td><td>${x.selisih_vs_sinyal_pct}</td><td>${f(x.fee_rp,0)}</td></tr>`).join('');
+});
+</script></body></html>
