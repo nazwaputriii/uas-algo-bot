@@ -1,0 +1,25 @@
+name: kontrol
+on:
+  workflow_dispatch:
+    inputs:
+      aksi:
+        description: "kill_on = tahan pembelian baru, kill_off = lanjut, reset = hapus data UJI (hanya sebelum freeze)"
+        required: true
+        type: choice
+        options: [kill_on, kill_off, reset]
+jobs:
+  kontrol:
+    runs-on: ubuntu-latest
+    steps:
+      - name: kirim perintah
+        env:
+          URL: ${{ secrets.VERCEL_APP_URL }}
+          S: ${{ secrets.CRON_SECRET }}
+          AKSI: ${{ inputs.aksi }}
+        run: |
+          case "$AKSI" in
+            kill_on)  P="/api/kill?on=1" ;;
+            kill_off) P="/api/kill?on=0" ;;
+            reset)    P="/api/reset" ;;
+          esac
+          curl -fsS --max-time 60 -H "Authorization: Bearer $S" "$URL$P"

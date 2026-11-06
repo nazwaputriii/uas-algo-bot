@@ -1,0 +1,33 @@
+name: tick
+on:
+  schedule:
+    - cron: "7 * * * *"      # tiap jam menit ke-7 (UTC); bukan menit 0 karena sering terlambat
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: tick
+  cancel-in-progress: false
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: panggil bot di Vercel
+        env:
+          URL: ${{ secrets.VERCEL_APP_URL }}
+          S: ${{ secrets.CRON_SECRET }}
+        run: curl -fsS --retry 3 --retry-delay 10 --max-time 120 -H "Authorization: Bearer $S" "$URL/api/tick"
+      - name: simpan log mentah ke repo
+        if: always()
+        env:
+          URL: ${{ secrets.VERCEL_APP_URL }}
+          S: ${{ secrets.CRON_SECRET }}
+        run: |
+          mkdir -p data_bot
+          curl -fsS --max-time 120 -H "Authorization: Bearer $S" "$URL/api/export" -o data_bot/export_log_mentah.json || exit 0
+          git config user.name "paper-bot"
+          git config user.email "paper-bot@users.noreply.github.com"
+          git add data_bot
+          git diff --cached --quiet || git commit -m "log mentah $(date -u +%Y-%m-%dT%H:%MZ)"
+          for i in 1 2 3; do git pull --rebase && git push && break || sleep 5; done
