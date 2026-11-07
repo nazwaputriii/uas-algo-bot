@@ -38,3 +38,4 @@ Kode UTS: Donchian Breakout 100 hari, keluar 20 hari, trailing 6,5 x ATR14 (saha
 
 ## Log perubahan setelah freeze
 (kosong; semua perbaikan bug dicatat di sini dengan tanggal dan alasan)
+uji
