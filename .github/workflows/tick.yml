@@ -18,12 +18,14 @@ jobs:
           URL: ${{ secrets.VERCEL_APP_URL }}
           S: ${{ secrets.CRON_SECRET }}
         run: |
-          if [ -z "$URL" ]; then echo "::error::Secret VERCEL_APP_URL kosong"; exit 1; fi
+                  if [ -z "$URL" ]; then echo "::error::Secret VERCEL_APP_URL kosong"; exit 1; fi
           if [ -z "$S" ]; then echo "::error::Secret CRON_SECRET kosong"; exit 1; fi
+          SIDIK=$(printf %s "$S" | sha256sum | cut -c1-6)
+          echo "github_panjang=${#S} github_sidik=$SIDIK"
           code=$(curl -sS -o resp.txt -w "%{http_code}" --max-time 120 -H "Authorization: Bearer $S" "$URL/api/tick" || echo 000)
           echo "HTTP $code"
-          cat resp.txt || true
-          if [ "$code" != "200" ]; then echo "::error::tick gagal, HTTP $code: $(head -c 300 resp.txt)"; exit 1; fi
+          echo "$(cat resp.txt)"
+          if [ "$code" != "200" ]; then echo "::error::tick gagal HTTP $code | github=${#S}/$SIDIK | server=$(head -c 300 resp.txt)"; exit 1; fi
       - name: simpan log mentah ke repo
         if: always()
         env:
