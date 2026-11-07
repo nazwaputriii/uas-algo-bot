@@ -1,4 +1,4 @@
-import os, sys, json
+import os, sys, json, hashlib
 from http.server import BaseHTTPRequestHandler
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import _bot, _simpan, _auth
@@ -7,7 +7,9 @@ import _bot, _simpan, _auth
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if not _auth.sah(self.headers):
-            return self._kirim(401, {"error": "tidak berwenang"})
+            s = os.environ.get("CRON_SECRET") or ""
+            return self._kirim(401, {"error": "tidak berwenang", "server_panjang": len(s),
+                                     "server_sidik": hashlib.sha256(s.encode()).hexdigest()[:6] if s else None})
         try:
             hasil = _bot.tick(_simpan.Redis())
             self._kirim(200 if hasil["status"] != "gagal" else 500, hasil)
