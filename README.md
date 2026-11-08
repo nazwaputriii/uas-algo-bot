@@ -5,7 +5,7 @@ Bot membaca harga dan order book publik Indodax, menghitung sinyal, dan **mensim
 Tidak ada uang sungguhan dan tidak memakai API key. Long-only, tanpa short, margin, atau leverage.
 
 ## FREEZE (dicatat sebelum forward test)
-- **Waktu freeze/mulai:** ISI_SAAT_COMMIT (WIB) - waktu commit ini adalah bukti freeze
+- **Waktu freeze/mulai:** 08_November_2026 10.44 (WIB) - waktu commit ini adalah bukti freeze
 - **Exchange/pasar:** Indodax, pasangan IDR, order taker (beli di ask, jual di bid)
 - **Timeframe:** 4 jam (candle tutup 00,04,08,12,16,20 UTC)
 - **Universe (5):** BTC/IDR, ETH/IDR, XRP/IDR, DOGE/IDR, ADA/IDR
@@ -39,3 +39,4 @@ Kode UTS: Donchian Breakout 100 hari, keluar 20 hari, trailing 6,5 x ATR14 (saha
 ## Log perubahan setelah freeze
 (kosong; semua perbaikan bug dicatat di sini dengan tanggal dan alasan)
 uji
+Catatan: 1-8 Nov 2026 adalah uji coba (bot lama harian di GitHub Actions dan uji koneksi), bukan bagian forward test. Pada uji koneksi 7-8 Nov, jadwal GitHub terlewat sehingga ada candle yang tidak diproses; ini menjadi alasan memakai penjadwal tambahan cron-job.org.
