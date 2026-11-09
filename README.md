@@ -43,6 +43,7 @@ Tidak ada perubahan aturan, parameter, maupun universe sejak freeze. Hash konfig
 - 9 Nov 2026: menghapus sisa data uji bot lama (1 Nov 2026) di folder data_bot: state.json, log.txt, runs.csv, equity.csv. Hash konfigurasi bot lama berbeda dan bukan bagian forward test. Data forward test yang sah adalah data_bot/export_log_mentah.json dan data_bot/snapshots.csv beserta snapshots_mentah.jsonl.
 - 9 Nov 2026: menambahkan hitung_ulang.py dan dashboard_template.html. Keduanya hanya membaca log dan menghitung ulang angka, tidak mengubah bot.
 - Penjadwal: selain GitHub Actions (tick.yml, tiap jam menit ke-7), bot dipanggil cron-job.org tiap 30 menit sejak 8 Nov 2026. Idempotensi per candle membuat panggilan ganda tidak membeli dua kali. Angka "panggilan terjadwal" di dashboard dihitung per jam, sehingga panggilan terlaksana bisa lebih besar. Uptime dihitung dari candle yang terproses tepat waktu, bukan dari jumlah panggilan.
+- 9 Nov 2026: baris waktu freeze sempat diubah ke 10.55 lalu dikembalikan ke 10.44 sesuai waktu commit freeze. Pukul 10.55 WIB adalah waktu forward test mulai (event mulai di log).
 
 Catatan: 1-8 Nov 2026 adalah uji coba (bot lama harian di GitHub Actions dan uji koneksi), bukan bagian forward test. Pada uji koneksi 7-8 Nov, jadwal GitHub terlewat sehingga ada candle yang tidak diproses; ini menjadi alasan memakai penjadwal tambahan cron-job.org.
 8 Nov 2026 10.41 WIB: kill switch terpicu tidak sengaja saat uji (workflow kontrol), tanpa order. Data uji dihapus dengan reset. Forward test tercatat mulai dari event mulai setelah reset.
