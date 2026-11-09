@@ -48,6 +48,7 @@ Tidak ada perubahan aturan, parameter, maupun universe sejak freeze. Hash konfig
 - 9 Nov 2026: baris waktu freeze sempat diubah ke 10.55 lalu dikembalikan ke 10.44 sesuai waktu commit freeze. Pukul 10.55 WIB adalah waktu forward test mulai (event mulai di log).
 - Tes kill switch terencana pada 9 Nov 2026, diaktifkan lalu dimatikan lagi. Setelah itu workflow kontrol dinonaktifkan.
 - 9 Nov 2026: menambah dua baris dokumentasi di Struktur dan Menjalankan, tanpa mengubah kode
+- 9 Nov 2026: memperbaiki catatan penyebab kegagalan uji koneksi (HTTP 401 dan 308), tanpa mengubah kode.
   
-Catatan: 1-8 Nov 2026 adalah uji coba (bot lama harian di GitHub Actions dan uji koneksi), bukan bagian forward test. Pada uji koneksi 7-8 Nov, jadwal GitHub terlewat sehingga ada candle yang tidak diproses; ini menjadi alasan memakai penjadwal tambahan cron-job.org.
+Catatan: 1-8 Nov 2026 adalah uji coba (bot lama harian di GitHub Actions dan uji koneksi), bukan bagian forward test. Pada uji koneksi sebelum forward test, panggilan ke Vercel gagal HTTP 401 karena CRON_SECRET di GitHub tidak sama dengan di Vercel, lalu HTTP 308 karena alamat URL; keduanya baru teratasi pada 8 Nov. Jadwal GitHub Actions juga sering terlewat, sehingga ditambahkan penjadwal cron-job.org.
 8 Nov 2026 10.41 WIB: kill switch terpicu tidak sengaja saat uji (workflow kontrol), tanpa order. Data uji dihapus dengan reset. Forward test tercatat mulai dari event mulai setelah reset.
