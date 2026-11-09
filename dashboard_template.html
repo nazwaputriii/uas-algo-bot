@@ -1,0 +1,83 @@
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Backtest vs Forward Test - Bot Dry Run Indodax</title>
+<style>
+:root{--bg:#f6f8fc;--sf:#fff;--fg:#18222f;--mut:#5d6b7c;--ln:#d9e0ea;--bt:#3b6ea8;--fw:#c2557a;--ok:#2c7a55;--bad:#b3402f}
+@media(prefers-color-scheme:dark){:root{--bg:#10161e;--sf:#171f2a;--fg:#e6ebf2;--mut:#93a1b3;--ln:#2a3544;--bt:#7fb0e6;--fw:#ea8fae;--ok:#6fcf9f;--bad:#f08a78}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums}
+main{max-width:980px;margin:0 auto;padding:24px 16px 56px}
+h1{font:600 26px/1.2 Georgia,"Times New Roman",serif;margin:0 0 6px}h2{font:600 18px Georgia,"Times New Roman",serif;margin:34px 0 8px}
+p{margin:4px 0}.s{color:var(--mut);font-size:13px}
+.w{overflow-x:auto;background:var(--sf);border:1px solid var(--ln);border-radius:6px}
+table{border-collapse:collapse;width:100%;font-size:14px}th,td{padding:7px 12px;border-bottom:1px solid var(--ln);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}th{font-weight:600;color:var(--mut)}tr:last-child td{border-bottom:0}
+.b{color:var(--bt)}.f{color:var(--fw)}.ok{color:var(--ok)}.x{color:var(--bad)}
+svg{width:100%;height:auto;display:block;background:var(--sf);border:1px solid var(--ln);border-radius:6px}
+</style></head><body><main>
+<h1>Backtest vs forward test</h1>
+<p class="s" id="meta"></p>
+
+<h2>Ringkasan metrik</h2>
+<div class="w"><table id="ringkas"></table></div>
+<p class="s">Kolom ketiga menjalankan ulang backtest pada jendela candle yang sama dengan forward test. CAGR forward tidak ditampilkan karena periodenya terlalu pendek.</p>
+
+<h2>Kurva ekuitas backtest</h2>
+<svg id="gb" viewBox="0 0 720 220"></svg>
+<h2>Ekuitas harian forward test</h2>
+<svg id="gf" viewBox="0 0 720 160"></svg>
+
+<h2>Kecocokan sinyal backtest dan forward</h2>
+<div class="w"><table id="cocok"></table></div>
+<p id="vonis"></p>
+
+<h2>Panel operasional</h2>
+<div class="w"><table id="ops"></table></div>
+
+<h2>Spread: yang dipakai backtest dan yang terukur</h2>
+<div class="w"><table id="spread"></table></div>
+
+<h2>Order simulasi forward test</h2>
+<div class="w"><table id="order"></table></div>
+<p class="s" id="kaki"></p>
+</main>
+<script>
+const D=/*DATA*/null;
+const $=i=>document.getElementById(i),n=(x,d=2)=>x==null?'-':(+x).toLocaleString('id-ID',{minimumFractionDigits:d,maximumFractionDigits:d}),
+p=x=>x==null?'-':n(x*100)+'%',rp=x=>x==null?'-':(x<0?'-':'')+'Rp'+n(Math.abs(x),0);
+const b=D.backtest.metrik,f=D.forward.metrik,w=D.jendela.metrik_backtest||{};
+$('meta').textContent='Freeze: '+D.freeze+'. Log forward test: '+D.forward_mulai+' sampai '+D.forward_akhir+'. Hash konfigurasi: '+D.cfg_hash+'.';
+const rows=[['Return total',p(b.return_total),p(f.return_total),p(w.return_total)],
+['CAGR',p(b.cagr),'tidak ditampilkan','-'],['Maximum drawdown',p(b.mdd),p(f.mdd),p(w.mdd)],
+['Jumlah trade',b.n_trade,f.n_trade,w.n_trade==null?'-':w.n_trade],['Win rate',p(b.win_rate),p(f.win_rate),p(w.win_rate)],
+['Profit factor',n(b.profit_factor),n(f.profit_factor),n(w.profit_factor)],
+['Rata-rata untung per trade',rp(b.rata_untung),rp(f.rata_untung),rp(w.rata_untung)],
+['Rata-rata rugi per trade',rp(b.rata_rugi),rp(f.rata_rugi),rp(w.rata_rugi)],
+['Porsi biaya terhadap laba kotor',p(b.porsi_biaya),p(f.porsi_biaya),p(w.porsi_biaya)],
+['Buy and hold BTC/IDR',p(D.backtest.btc_buy_hold),p(f.benchmark_btc_buy_hold),p(D.jendela.btc_buy_hold)]];
+$('ringkas').innerHTML='<tr><th>Metrik</th><th class="b">Backtest penuh</th><th class="f">Forward test</th><th class="b">Backtest di jendela forward</th></tr>'+rows.map(r=>'<tr><td>'+r.join('</td><td>')+'</td></tr>').join('');
+function garis(id,pts,warna,lab){const s=$(id),W=720,H=+s.viewBox.baseVal.height,m=34;
+ if(!pts||pts.length<2){s.innerHTML='<text x="16" y="28" fill="var(--mut)" font-size="13">Belum cukup data untuk digambar.</text>';return}
+ const ys=pts.map(q=>q[1]),lo=Math.min(...ys),hi=Math.max(...ys),sp=(hi-lo)||1;
+ const xy=pts.map((q,i)=>(m+i/(pts.length-1)*(W-m-10)).toFixed(1)+','+(H-22-(q[1]-lo)/sp*(H-44)).toFixed(1)).join(' ');
+ s.innerHTML='<polyline fill="none" stroke="'+warna+'" stroke-width="2" points="'+xy+'"/><text x="4" y="14" fill="var(--mut)" font-size="11">'+lab(hi)+'</text><text x="4" y="'+(H-6)+'" fill="var(--mut)" font-size="11">'+lab(lo)+'</text>'}
+garis('gb',D.backtest.equity,'var(--bt)',v=>'Rp'+n(v/1e6,0)+' jt');
+garis('gf',D.forward.equity_harian.map(q=>[0,q[1]]),'var(--fw)',v=>'Rp'+n(v/1e6,2)+' jt');
+const j=D.jendela,kv=(a,c)=>'<tr><td>'+a+'</td><td>'+c+'</td></tr>';
+$('cocok').innerHTML='<tr><th>Pemeriksaan</th><th>Hasil</th></tr>'+
+kv('Jendela forward (candle 4 jam, UTC)',j.dari+' sampai '+j.sampai)+
+kv('Candle forward yang ada di data backtest',j.close_total+' dari '+j.bar_forward)+
+kv('Harga close identik',j.close_cocok+' dari '+j.close_total)+
+kv('Sinyal forward test',j.sinyal_forward)+kv('Sinyal backtest di jendela yang sama',j.sinyal_backtest)+
+kv('Sinyal identik candle demi candle',j.sinyal_identik)+kv('Candle terlewat oleh bot',j.bar_terlewat);
+const ok=j.sinyal_forward===j.sinyal_backtest&&j.sinyal_identik===j.sinyal_forward&&j.close_cocok===j.close_total;
+$('vonis').innerHTML=ok?'<span class="ok">Sinyal dan harga close cocok seluruhnya pada jendela ini.</span>':'<span class="x">Ada selisih. Rincian: '+(j.selisih.length?j.selisih.join('; '):'lihat tabel di atas')+'.</span>';
+$('ops').innerHTML='<tr><th>Indikator</th><th>Nilai</th></tr>'+
+kv('Uptime (candle terproses tepat waktu)',p(f.uptime)+' ('+f.candle_tepat+' dari '+f.candle_total+')')+
+kv('Panggilan terlaksana dari terjadwal',f.panggilan_terlaksana+' dari '+f.panggilan_terjadwal)+
+kv('Error API',f.error_api)+kv('Pemakaian kill switch',f.kill_switch_dipakai)+kv('Posisi terbuka',(f.posisi_terbuka||[]).join(', ')||'tidak ada');
+$('spread').innerHTML='<tr><th>Pasangan</th><th class="b">Backtest (%)</th><th class="f">Median snapshot (%)</th><th>Jumlah snapshot</th></tr>'+
+Object.entries(D.spread).map(([k,v])=>'<tr><td>'+k+'</td><td>'+n(v.backtest_pct,4)+'</td><td>'+n(v.snapshot_median_pct,4)+'</td><td>'+v.n_snapshot+'</td></tr>').join('');
+$('order').innerHTML=D.forward.orders.length?'<tr><th>Waktu</th><th>Pair</th><th>Sisi</th><th>Qty</th><th>Bid</th><th>Ask</th><th>Fill</th><th>Selisih vs sinyal %</th><th>Fee</th></tr>'+
+D.forward.orders.map(o=>'<tr><td>'+o.waktu+'</td><td>'+o.pair+'</td><td>'+o.sisi+'</td><td>'+n(o.qty,6)+'</td><td>'+n(o.best_bid,0)+'</td><td>'+n(o.best_ask,0)+'</td><td>'+n(o.harga_fill,0)+'</td><td>'+n(o.selisih_vs_sinyal_pct,4)+'</td><td>'+rp(o.fee_rp)+'</td></tr>').join(''):
+'<tr><td>Belum ada order. Bot hanya membeli saat close menembus tertinggi 120 candle.</td></tr>';
+$('kaki').textContent='Dibuat oleh hitung_ulang.py dari data_bot/export_log_mentah.json pada '+D.dibuat+'. Semua angka dihitung ulang dari log, tidak ada yang ditulis manual.';
+</script></body></html>
