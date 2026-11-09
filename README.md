@@ -29,12 +29,14 @@ Kode UTS: Donchian Breakout 100 hari, keluar 20 hari, trailing 6,5 x ATR14 (saha
 - `snapshot_orderbook.py` + workflow `snapshot.yml`: snapshot order book tiap jam untuk estimasi spread/slippage
 - `tarik_data.py` (data 4 jam 3 tahun lebih, ditarik mundur), `backtest.py`
 - `index.html` dashboard; storage: Upstash Redis (Vercel Marketplace)
+- hitung_ulang.py dan dashboard_template.html: menghitung ulang semua angka dari log mentah dan membuat dashboard_offline.html
 
 ## Menjalankan
 1. Vercel: import repo, hubungkan storage Upstash Redis, isi env `CRON_SECRET`.
 2. GitHub Secrets: `VERCEL_APP_URL`, `CRON_SECRET`.
 3. Backtest: `python tarik_data.py` lalu `python backtest.py`.
 4. Rahasia hanya di environment variable / GitHub Secrets. `.env` tidak di-commit (lihat `.env.example`).
+5. Hitung ulang dan dashboard offline: python tarik_data.py lalu python hitung_ulang.py
 
 ## Log perubahan setelah freeze
 Tidak ada perubahan aturan, parameter, maupun universe sejak freeze. Hash konfigurasi tetap 39f0625b6391 pada seluruh panggilan di log.
@@ -45,6 +47,7 @@ Tidak ada perubahan aturan, parameter, maupun universe sejak freeze. Hash konfig
 - Penjadwal: selain GitHub Actions (tick.yml, tiap jam menit ke-7), bot dipanggil cron-job.org tiap 30 menit sejak 8 Nov 2026. Idempotensi per candle membuat panggilan ganda tidak membeli dua kali. Angka "panggilan terjadwal" di dashboard dihitung per jam, sehingga panggilan terlaksana bisa lebih besar. Uptime dihitung dari candle yang terproses tepat waktu, bukan dari jumlah panggilan.
 - 9 Nov 2026: baris waktu freeze sempat diubah ke 10.55 lalu dikembalikan ke 10.44 sesuai waktu commit freeze. Pukul 10.55 WIB adalah waktu forward test mulai (event mulai di log).
 - Tes kill switch terencana pada 9 Nov 2026, diaktifkan lalu dimatikan lagi. Setelah itu workflow kontrol dinonaktifkan.
-
+9 Nov 2026: menambah dua baris dokumentasi di Struktur dan Menjalankan, tanpa mengubah kode
+  
 Catatan: 1-8 Nov 2026 adalah uji coba (bot lama harian di GitHub Actions dan uji koneksi), bukan bagian forward test. Pada uji koneksi 7-8 Nov, jadwal GitHub terlewat sehingga ada candle yang tidak diproses; ini menjadi alasan memakai penjadwal tambahan cron-job.org.
 8 Nov 2026 10.41 WIB: kill switch terpicu tidak sengaja saat uji (workflow kontrol), tanpa order. Data uji dihapus dengan reset. Forward test tercatat mulai dari event mulai setelah reset.
