@@ -5,7 +5,7 @@ Bot membaca harga dan order book publik Indodax, menghitung sinyal, dan **mensim
 Tidak ada uang sungguhan dan tidak memakai API key. Long-only, tanpa short, margin, atau leverage.
 
 ## FREEZE (dicatat sebelum forward test)
-- **Waktu freeze/mulai:** 08_November_2026 10.44 (WIB) - waktu commit ini adalah bukti freeze
+- **Waktu freeze/mulai:** 08_November_2026 10.55 (WIB) - waktu commit ini adalah bukti freeze
 - **Exchange/pasar:** Indodax, pasangan IDR, order taker (beli di ask, jual di bid)
 - **Timeframe:** 4 jam (candle tutup 00,04,08,12,16,20 UTC)
 - **Universe (5):** BTC/IDR, ETH/IDR, XRP/IDR, DOGE/IDR, ADA/IDR
@@ -37,7 +37,12 @@ Kode UTS: Donchian Breakout 100 hari, keluar 20 hari, trailing 6,5 x ATR14 (saha
 4. Rahasia hanya di environment variable / GitHub Secrets. `.env` tidak di-commit (lihat `.env.example`).
 
 ## Log perubahan setelah freeze
-(kosong; semua perbaikan bug dicatat di sini dengan tanggal dan alasan)
-uji
+Tidak ada perubahan aturan, parameter, maupun universe sejak freeze. Hash konfigurasi tetap 39f0625b6391 pada seluruh panggilan di log.
+
+- 9 Nov 2026: merapikan repositori tanpa menyentuh kode bot. Menghapus 9 salinan file di folder .github/workflows (backtest.py, tarik_data.py, snapshot_orderbook.py, index.html, requirements.txt, vercel.json, README.md, .env.example, .gitignore). Salinan itu tidak dipakai workflow mana pun, dan README di dalamnya adalah versi lama. Hanya tick.yml, kontrol.yml, dan snapshot.yml yang dipertahankan.
+- 9 Nov 2026: menghapus sisa data uji bot lama (1 Nov 2026) di folder data_bot: state.json, log.txt, runs.csv, equity.csv. Hash konfigurasi bot lama berbeda dan bukan bagian forward test. Data forward test yang sah adalah data_bot/export_log_mentah.json dan data_bot/snapshots.csv beserta snapshots_mentah.jsonl.
+- 9 Nov 2026: menambahkan hitung_ulang.py dan dashboard_template.html. Keduanya hanya membaca log dan menghitung ulang angka, tidak mengubah bot.
+- Penjadwal: selain GitHub Actions (tick.yml, tiap jam menit ke-7), bot dipanggil cron-job.org tiap 30 menit sejak 8 Nov 2026. Idempotensi per candle membuat panggilan ganda tidak membeli dua kali. Angka "panggilan terjadwal" di dashboard dihitung per jam, sehingga panggilan terlaksana bisa lebih besar. Uptime dihitung dari candle yang terproses tepat waktu, bukan dari jumlah panggilan.
+
 Catatan: 1-8 Nov 2026 adalah uji coba (bot lama harian di GitHub Actions dan uji koneksi), bukan bagian forward test. Pada uji koneksi 7-8 Nov, jadwal GitHub terlewat sehingga ada candle yang tidak diproses; ini menjadi alasan memakai penjadwal tambahan cron-job.org.
-8 Nov 2026 10.41 WIB: kill switch terpicu tidak sengaja saat uji (workflow kontrol), tanpa order. Data uji dihapus dengan reset. Forward test tercatat mulai dari event mulai setelah reset
+8 Nov 2026 10.41 WIB: kill switch terpicu tidak sengaja saat uji (workflow kontrol), tanpa order. Data uji dihapus dengan reset. Forward test tercatat mulai dari event mulai setelah reset.
