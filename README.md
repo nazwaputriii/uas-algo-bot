@@ -5,7 +5,7 @@ Bot membaca harga dan order book publik Indodax, menghitung sinyal, dan **mensim
 Tidak ada uang sungguhan dan tidak memakai API key. Long-only, tanpa short, margin, atau leverage.
 
 ## FREEZE (dicatat sebelum forward test)
-- **Waktu freeze/mulai:** 08_November_2026 10.55 (WIB) - waktu commit ini adalah bukti freeze
+- **Waktu freeze/mulai:** 08_November_2026 10.44 (WIB) - waktu commit ini adalah bukti freeze
 - **Exchange/pasar:** Indodax, pasangan IDR, order taker (beli di ask, jual di bid)
 - **Timeframe:** 4 jam (candle tutup 00,04,08,12,16,20 UTC)
 - **Universe (5):** BTC/IDR, ETH/IDR, XRP/IDR, DOGE/IDR, ADA/IDR
