@@ -1,2 +1,0 @@
-2026-11-01 15:45:54 [INFO] Run pertama. Parameter DIBEKUKAN tanggal 2026-11-01, kode 873f8d3f278b
-2026-11-01 15:45:54 [INFO] Bar 2026-10-31 diproses. Sinyal beli: [] jual: {}
