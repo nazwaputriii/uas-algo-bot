@@ -1,83 +1,105 @@
-<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Backtest vs Forward Test - Bot Dry Run Indodax</title>
-<style>
-:root{--bg:#f6f8fc;--sf:#fff;--fg:#18222f;--mut:#5d6b7c;--ln:#d9e0ea;--bt:#3b6ea8;--fw:#c2557a;--ok:#2c7a55;--bad:#b3402f}
-@media(prefers-color-scheme:dark){:root{--bg:#10161e;--sf:#171f2a;--fg:#e6ebf2;--mut:#93a1b3;--ln:#2a3544;--bt:#7fb0e6;--fw:#ea8fae;--ok:#6fcf9f;--bad:#f08a78}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;font-variant-numeric:tabular-nums}
-main{max-width:980px;margin:0 auto;padding:24px 16px 56px}
-h1{font:600 26px/1.2 Georgia,"Times New Roman",serif;margin:0 0 6px}h2{font:600 18px Georgia,"Times New Roman",serif;margin:34px 0 8px}
-p{margin:4px 0}.s{color:var(--mut);font-size:13px}
-.w{overflow-x:auto;background:var(--sf);border:1px solid var(--ln);border-radius:6px}
-table{border-collapse:collapse;width:100%;font-size:14px}th,td{padding:7px 12px;border-bottom:1px solid var(--ln);text-align:right;white-space:nowrap}
-th:first-child,td:first-child{text-align:left}th{font-weight:600;color:var(--mut)}tr:last-child td{border-bottom:0}
-.b{color:var(--bt)}.f{color:var(--fw)}.ok{color:var(--ok)}.x{color:var(--bad)}
-svg{width:100%;height:auto;display:block;background:var(--sf);border:1px solid var(--ln);border-radius:6px}
-</style></head><body><main>
-<h1>Backtest vs forward test</h1>
-<p class="s" id="meta"></p>
+<!doctype html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Nazwa - Bot Dry Run Dashboard</title><style>
+:root{--ac:#5b8fe6;--ac-d:#2f5fb3;--ac2:#eef4ff;--ac3:#dce9fd;--bg:#f7faff;--tx:#1d2a3f;--mu:#667a96;--bd:#e0e9f7;--up:#1f9d62;--dn:#d4506a;--wn:#c98a00;--side:236px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;font:14px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--tx);background:var(--bg)}
+#shell{display:flex;min-height:100vh}
+#side{width:var(--side);flex:none;background:#fff;border-right:1px solid var(--bd);position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:18px 12px}
+.brand{padding:0 4px 20px}.brand .logo{display:block;width:100%;max-width:196px;height:auto}
+#menu{display:flex;flex-direction:column;gap:2px}
+#menu button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:0;background:none;padding:9px 10px;border-radius:9px;color:var(--mu);font:inherit;font-size:13.5px;cursor:pointer;border-left:3px solid transparent}
+#menu button svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+#menu button:hover{background:var(--ac2);color:var(--ac-d)}#menu button.on{background:var(--ac2);color:var(--ac-d);font-weight:600;border-left-color:var(--ac)}
+.sfoot{margin-top:auto;padding:10px 8px 0;font-size:11px;color:var(--mu);border-top:1px solid var(--bd)}
+#main{flex:1;min-width:0;padding:22px 26px 60px;max-width:1240px}
+.phead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:21px;margin:0}h2{font-size:15.5px;margin:26px 0 10px}h3{font-size:13px;margin:16px 0 6px;color:var(--ac-d);text-transform:uppercase;letter-spacing:.5px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{font-size:11.5px;background:#fff;border:1px solid var(--bd);border-radius:999px;padding:3px 10px;color:var(--mu)}
+.page{display:block;scroll-margin-top:16px}.page+.page{margin-top:46px;padding-top:28px;border-top:2px solid var(--ac2)}.page+.page .chips{display:none}
+.sub{color:var(--mu);font-size:12.5px}.card{background:#fff;border:1px solid var(--bd);border-radius:12px;padding:14px 16px}
+.grid{display:grid;gap:12px}.g4{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}.g2{grid-template-columns:repeat(auto-fit,minmax(360px,1fr))}.g3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.k{font-size:10.5px;color:var(--mu);text-transform:uppercase;letter-spacing:.5px}.v{font-size:22px;font-weight:700;margin:2px 0;letter-spacing:-.2px}.s{font-size:11.5px;color:var(--mu)}
+.pos{color:var(--up)}.neg{color:var(--dn)}.warn{color:var(--wn)}
+table{border-collapse:collapse;width:100%;font-size:12.5px}th,td{border-bottom:1px solid var(--bd);padding:7px 9px;text-align:right;white-space:nowrap}th{background:var(--ac2);color:#274a8a;position:sticky;top:0;font-weight:600;cursor:default}
+td:first-child,th:first-child,.l{text-align:left}.tw{overflow:auto;border:1px solid var(--bd);border-radius:10px;background:#fff;max-height:560px}
+tbody tr:hover{background:#f9fbff}th.sortable{cursor:pointer}th.sortable:hover{color:var(--ac)}
+canvas{width:100%;display:block;background:#fff;border:1px solid var(--bd);border-radius:10px}
+.banner{padding:9px 13px;border-radius:10px;margin:0 0 12px;font-size:13px;background:#fff6dd;color:#7a5600;border:1px solid #efd58a}
+input,select,button{font:inherit;padding:6px 10px;border:1px solid var(--bd);border-radius:8px;background:#fff;color:var(--tx)}button{cursor:pointer}button:hover{background:var(--ac2)}
+.seg{display:inline-flex;border:1px solid var(--bd);border-radius:9px;overflow:hidden;background:#fff}.seg button{border:0;border-radius:0;padding:5px 11px;font-size:12.5px;color:var(--mu)}.seg button.on{background:var(--ac);color:#fff}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}.grow{flex:1}
+.tag{display:inline-block;font-size:11px;padding:1px 8px;border-radius:999px;background:var(--ac2);color:var(--ac-d)}.tag.g{background:#e3f5ec;color:#17623f}.tag.r{background:#fde8ec;color:#8f2038}.tag.y{background:#fff3d6;color:#7a5600}.tag.n{background:#eaf0fa;color:#53647f}
+.star{cursor:pointer;color:#bccbe3;font-size:15px;user-select:none}.star.on{color:#e0a800}
+.bar{height:8px;background:var(--ac2);border-radius:999px;overflow:hidden}.bar i{display:block;height:100%;background:var(--ac);border-radius:999px}
+.ring{width:92px;height:92px;flex:none}
+.chk{display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--bd);font-size:13px}.chk:last-child{border:0}.chk i{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:11px;color:#fff;margin-top:1px}.chk i.ok{background:var(--up)}.chk i.no{background:var(--dn)}.chk small{display:block;color:var(--mu);font-size:11.5px}
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}.badge{border:1px solid var(--bd);border-radius:11px;padding:10px 12px;background:#fff}.badge.lock{opacity:.5;background:#f3f7fc}.badge b{display:block;font-size:15px}.badge span{font-size:11px;color:var(--mu)}
+details{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:8px 14px;margin:10px 0}summary{cursor:pointer;font-weight:600;color:var(--ac-d)}
+ul{margin:6px 0 6px 18px;padding:0}li{margin:4px 0}code{background:var(--ac2);padding:1px 5px;border-radius:5px;font-size:12px}
+.leg{display:flex;gap:14px;font-size:12px;color:var(--mu);flex-wrap:wrap}.leg i{display:inline-block;width:16px;height:3px;vertical-align:middle;margin-right:5px}
+.foot{margin-top:34px;padding-top:12px;border-top:1px solid var(--bd);font-size:11.5px;color:var(--mu)}
+@media(max-width:900px){#shell{flex-direction:column}#side{width:100%;height:auto;position:sticky;z-index:30;flex-direction:row;align-items:center;padding:8px 10px;overflow-x:auto;gap:8px}.brand{padding:0 8px 0 0}.brand .logo{width:128px}.sfoot{display:none}#menu{flex-direction:row;gap:2px}#menu button{white-space:nowrap;border-left:0;border-bottom:3px solid transparent;padding:7px 10px}#menu button.on{border-bottom-color:var(--ac)}#main{padding:14px 12px 50px}.page{scroll-margin-top:74px}.v{font-size:19px}}
 
-<h2>Ringkasan metrik</h2>
-<div class="w"><table id="ringkas"></table></div>
-<p class="s">Kolom ketiga menjalankan ulang backtest pada jendela candle yang sama dengan forward test. CAGR forward tidak ditampilkan karena periodenya terlalu pendek.</p>
+svg.ch{width:100%;display:block;background:#fff;border:1px solid var(--bd);border-radius:10px}
+.ban{padding:10px 14px;border-radius:10px;margin:0 0 12px;font-size:13.5px;font-weight:600}.ban.ok{background:#e3f5ec;color:#17623f;border:1px solid #bfe6d1}.ban.no{background:#fde8ec;color:#8f2038;border:1px solid #f4c3cd}
+@media(max-width:600px){.g4{grid-template-columns:1fr 1fr}.v{font-size:17px}.card{padding:12px}.chip{font-size:11px}}
+.lg{display:flex;gap:16px;font-size:12px;color:var(--mu);margin:0 0 8px}.lg i{display:inline-block;width:14px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px}
+</style></head><body><div id="shell"><aside id="side"></aside><div id="main"><div id="pages"></div></div></div><script>"use strict";
+const $=id=>document.getElementById(id);
+const nf=(x,d=0)=>x==null||!isFinite(x)?'N/A':new Intl.NumberFormat('id-ID',{minimumFractionDigits:d,maximumFractionDigits:d}).format(x);
+const rp=x=>x==null||!isFinite(x)?'N/A':(x<0?'-':'')+'Rp '+nf(Math.abs(x),0);
+const jt=x=>x==null||!isFinite(x)?'N/A':'Rp '+nf(x/1e6,0)+' jt';
+const pc=(x,d=1)=>x==null||!isFinite(x)?'N/A':nf(x,d)+'%';
+const pf=(x,d=1)=>x==null?'N/A':pc(x*100,d);
+const sg=x=>x==null?'':(x>0?'+':'');
+const cls=x=>x==null?'':x>0?'pos':x<0?'neg':'';
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const card=(k,v,s,c)=>`<div class="card"><div class="k">${k}</div><div class="v ${c||''}">${v}</div><div class="s">${s||''}</div></div>`;
+const tbl=(head,rows,c)=>`<div class="tw"><table class="${c||''}"><thead><tr>${head.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
+const tr=cells=>`<tr>${cells.map(c=>`<td>${c}</td>`).join('')}</tr>`;
+const ICON={overview:'<rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/>',performance:'<path d="M3 20h18M6 16l4-5 3 3 5-8"/>',portofolio:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/>',scanner:'<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',trade:'<path d="M4 6h16M4 12h16M4 18h10"/>',validasi:'<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/>',forward:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',strategi:'<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M9 9h6M9 13h6"/>'};
+function logoSVG(tag){const T=esc(String(tag||'Trading System').toUpperCase());return`<svg class="logo" viewBox="0 0 172 50" role="img" aria-label="Nazwa ${T}"><defs><linearGradient id="lg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b9d2fa"/><stop offset="1" stop-color="#6c9be8"/></linearGradient><linearGradient id="lg2" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#5b8fe6"/><stop offset="1" stop-color="#2f5fb3"/></linearGradient><clipPath id="lcw"><rect x="60" y="9" width="112" height="18"/></clipPath></defs><g fill="none" stroke-linejoin="round" stroke-linecap="round"><path d="M8 42 V12 L28 39" stroke="url(#lg1)" stroke-width="6.2"/><path d="M28 39 L37.05 14.26" stroke="url(#lg2)" stroke-width="6.2"/></g><polygon points="41,3.5 43.4,17 30.6,12" fill="#2f5fb3" stroke="#2f5fb3" stroke-width="1.2" stroke-linejoin="round"/><g clip-path="url(#lcw)"><g fill="none" stroke="#274a8a" stroke-width="2.3" stroke-linejoin="miter" stroke-miterlimit="10" transform="translate(60 9)"><path d="M1.2 19 V-1 L14.8 19 V-1"/><path d="M21.5 19 L29 -1 L36.5 19"/><path d="M44 0 H58 L44 18 H58"/><path d="M65.5 -1 L71 19 L76 5 L81 19 L86.5 -1"/><path d="M93.5 19 L101 -1 L108.5 19"/></g></g><text x="60" y="42" font-family="system-ui,-apple-system,'Segoe UI',Roboto,sans-serif" font-size="6.8" letter-spacing="2.6" fill="#7188a8" textLength="108" lengthAdjust="spacing">${T}</text></svg>`}
 
-<h2>Kurva ekuitas backtest</h2>
-<svg id="gb" viewBox="0 0 720 220"></svg>
-<h2>Ekuitas harian forward test</h2>
-<svg id="gf" viewBox="0 0 720 160"></svg>
-
-<h2>Kecocokan sinyal backtest dan forward</h2>
-<div class="w"><table id="cocok"></table></div>
-<p id="vonis"></p>
-
-<h2>Panel operasional</h2>
-<div class="w"><table id="ops"></table></div>
-
-<h2>Spread: yang dipakai backtest dan yang terukur</h2>
-<div class="w"><table id="spread"></table></div>
-
-<h2>Order simulasi forward test</h2>
-<div class="w"><table id="order"></table></div>
-<p class="s" id="kaki"></p>
-</main>
-<script>
 const D=/*DATA*/null;
-const $=i=>document.getElementById(i),n=(x,d=2)=>x==null?'-':(+x).toLocaleString('id-ID',{minimumFractionDigits:d,maximumFractionDigits:d}),
-p=x=>x==null?'-':n(x*100)+'%',rp=x=>x==null?'-':(x<0?'-':'')+'Rp'+n(Math.abs(x),0);
-const b=D.backtest.metrik,f=D.forward.metrik,w=D.jendela.metrik_backtest||{};
-$('meta').textContent='Freeze: '+D.freeze+'. Log forward test: '+D.forward_mulai+' sampai '+D.forward_akhir+'. Hash konfigurasi: '+D.cfg_hash+'.';
-const rows=[['Return total',p(b.return_total),p(f.return_total),p(w.return_total)],
-['CAGR',p(b.cagr),'tidak ditampilkan','-'],['Maximum drawdown',p(b.mdd),p(f.mdd),p(w.mdd)],
-['Jumlah trade',b.n_trade,f.n_trade,w.n_trade==null?'-':w.n_trade],['Win rate',p(b.win_rate),p(f.win_rate),p(w.win_rate)],
-['Profit factor',n(b.profit_factor),n(f.profit_factor),n(w.profit_factor)],
-['Rata-rata untung per trade',rp(b.rata_untung),rp(f.rata_untung),rp(w.rata_untung)],
-['Rata-rata rugi per trade',rp(b.rata_rugi),rp(f.rata_rugi),rp(w.rata_rugi)],
-['Porsi biaya terhadap laba kotor',p(b.porsi_biaya),p(f.porsi_biaya),p(w.porsi_biaya)],
-['Buy and hold BTC/IDR',p(D.backtest.btc_buy_hold),p(f.benchmark_btc_buy_hold),p(D.jendela.btc_buy_hold)]];
-$('ringkas').innerHTML='<tr><th>Metrik</th><th class="b">Backtest penuh</th><th class="f">Forward test</th><th class="b">Backtest di jendela forward</th></tr>'+rows.map(r=>'<tr><td>'+r.join('</td><td>')+'</td></tr>').join('');
-function garis(id,pts,warna,lab){const s=$(id),W=720,H=+s.viewBox.baseVal.height,m=34;
- if(!pts||pts.length<2){s.innerHTML='<text x="16" y="28" fill="var(--mut)" font-size="13">Belum cukup data untuk digambar.</text>';return}
- const ys=pts.map(q=>q[1]),lo=Math.min(...ys),hi=Math.max(...ys),sp=(hi-lo)||1;
- const xy=pts.map((q,i)=>(m+i/(pts.length-1)*(W-m-10)).toFixed(1)+','+(H-22-(q[1]-lo)/sp*(H-44)).toFixed(1)).join(' ');
- s.innerHTML='<polyline fill="none" stroke="'+warna+'" stroke-width="2" points="'+xy+'"/><text x="4" y="14" fill="var(--mut)" font-size="11">'+lab(hi)+'</text><text x="4" y="'+(H-6)+'" fill="var(--mut)" font-size="11">'+lab(lo)+'</text>'}
-garis('gb',D.backtest.equity,'var(--bt)',v=>'Rp'+n(v/1e6,0)+' jt');
-garis('gf',D.forward.equity_harian.map(q=>[0,q[1]]),'var(--fw)',v=>'Rp'+n(v/1e6,2)+' jt');
-const j=D.jendela,kv=(a,c)=>'<tr><td>'+a+'</td><td>'+c+'</td></tr>';
-$('cocok').innerHTML='<tr><th>Pemeriksaan</th><th>Hasil</th></tr>'+
-kv('Jendela forward (candle 4 jam, UTC)',j.dari+' sampai '+j.sampai)+
-kv('Candle forward yang ada di data backtest',j.close_total+' dari '+j.bar_forward)+
-kv('Harga close identik',j.close_cocok+' dari '+j.close_total)+
-kv('Sinyal forward test',j.sinyal_forward)+kv('Sinyal backtest di jendela yang sama',j.sinyal_backtest)+
-kv('Sinyal identik candle demi candle',j.sinyal_identik)+kv('Candle terlewat oleh bot',j.bar_terlewat);
+const b=D.backtest.metrik,f=D.forward.metrik,j=D.jendela,w=j.metrik_backtest||{};
+const PAGES=[['overview','Overview','overview'],['kurva','Performance','performance'],['cocok','Validasi','validasi'],['ops','Forward Test','forward'],['spread','Spread','portofolio'],['order','Order','trade']];
+$('side').innerHTML='<div class="brand">'+logoSVG('Bot Dry Run')+'</div><div id="menu">'+PAGES.map(p=>'<button data-p="'+p[0]+'"><svg viewBox="0 0 24 24">'+ICON[p[2]]+'</svg>'+p[1]+'</button>').join('')+'</div><div class="sfoot">Log sampai<br><b>'+D.forward_akhir+'</b><br>Nazwa Jaliyanti Putri</div>';
+const BC='#5b8fe6',FC='#e0789a';
+function chart(id,pts,color,o){const s=$(id),W=720,H=+s.getAttribute('viewBox').split(' ')[3],L=66,R=14,T=16,B=28;
+ if(!pts||pts.length<2){s.innerHTML='<text x="16" y="30" fill="#667a96" font-size="13">Belum cukup data untuk digambar.</text>';return}
+ const ys=pts.map(q=>q[1]);let lo=Math.min(...ys),hi=Math.max(...ys);if(o.ref!=null){lo=Math.min(lo,o.ref);hi=Math.max(hi,o.ref)}
+ let sp=(hi-lo)||Math.abs(hi)*.02||1;lo-=sp*.08;hi+=sp*.08;sp=hi-lo;
+ const X=i=>L+i/(pts.length-1)*(W-L-R),Y=v=>T+(hi-v)/sp*(H-T-B);let g='';
+ for(let k=0;k<4;k++){const v=lo+sp*k/3.4+sp*.04,y=Y(v);g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y+'" y2="'+y+'" stroke="#e0e9f7"/><text x="'+(L-8)+'" y="'+(y+4)+'" text-anchor="end" fill="#667a96" font-size="11">'+o.fmt(v)+'</text>'}
+ const ln=pts.map((q,i)=>X(i).toFixed(1)+','+Y(q[1]).toFixed(1)).join(' ');
+ g+='<defs><linearGradient id="g'+id+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+color+'" stop-opacity=".22"/><stop offset="1" stop-color="'+color+'" stop-opacity="0"/></linearGradient></defs><polygon points="'+X(0)+','+(H-B)+' '+ln+' '+X(pts.length-1)+','+(H-B)+'" fill="url(#g'+id+')"/>';
+ if(o.ref!=null)g+='<line x1="'+L+'" x2="'+(W-R)+'" y1="'+Y(o.ref)+'" y2="'+Y(o.ref)+'" stroke="#667a96" stroke-dasharray="4 4" opacity=".7"/><text x="'+(W-R)+'" y="'+(Y(o.ref)-5)+'" text-anchor="end" fill="#667a96" font-size="11">modal Rp 100 jt</text>';
+ g+='<polyline fill="none" stroke="'+color+'" stroke-width="2" stroke-linejoin="round" points="'+ln+'"/>';
+ if(o.dots)pts.forEach((q,i)=>g+='<circle cx="'+X(i)+'" cy="'+Y(q[1])+'" r="4.5" fill="'+color+'"/>');
+ o.x.forEach(a=>g+='<text x="'+(L+a[0]*(W-L-R))+'" y="'+(H-8)+'" text-anchor="'+a[2]+'" fill="#667a96" font-size="11">'+a[1]+'</text>');
+ s.innerHTML=g}
+const chip=(a,v)=>'<span class="chip">'+a+': <b>'+v+'</b></span>';
 const ok=j.sinyal_forward===j.sinyal_backtest&&j.sinyal_identik===j.sinyal_forward&&j.close_cocok===j.close_total;
-$('vonis').innerHTML=ok?'<span class="ok">Sinyal dan harga close cocok seluruhnya pada jendela ini.</span>':'<span class="x">Ada selisih. Rincian: '+(j.selisih.length?j.selisih.join('; '):'lihat tabel di atas')+'.</span>';
-$('ops').innerHTML='<tr><th>Indikator</th><th>Nilai</th></tr>'+
-kv('Uptime (candle terproses tepat waktu)',p(f.uptime)+' ('+f.candle_tepat+' dari '+f.candle_total+')')+
-kv('Panggilan terlaksana dari terjadwal',f.panggilan_terlaksana+' dari '+f.panggilan_terjadwal)+
-kv('Error API',f.error_api)+kv('Pemakaian kill switch',f.kill_switch_dipakai)+kv('Posisi terbuka',(f.posisi_terbuka||[]).join(', ')||'tidak ada');
-$('spread').innerHTML='<tr><th>Pasangan</th><th class="b">Backtest (%)</th><th class="f">Median snapshot (%)</th><th>Jumlah snapshot</th></tr>'+
-Object.entries(D.spread).map(([k,v])=>'<tr><td>'+k+'</td><td>'+n(v.backtest_pct,4)+'</td><td>'+n(v.snapshot_median_pct,4)+'</td><td>'+v.n_snapshot+'</td></tr>').join('');
-$('order').innerHTML=D.forward.orders.length?'<tr><th>Waktu</th><th>Pair</th><th>Sisi</th><th>Qty</th><th>Bid</th><th>Ask</th><th>Fill</th><th>Selisih vs sinyal %</th><th>Fee</th></tr>'+
-D.forward.orders.map(o=>'<tr><td>'+o.waktu+'</td><td>'+o.pair+'</td><td>'+o.sisi+'</td><td>'+n(o.qty,6)+'</td><td>'+n(o.best_bid,0)+'</td><td>'+n(o.best_ask,0)+'</td><td>'+n(o.harga_fill,0)+'</td><td>'+n(o.selisih_vs_sinyal_pct,4)+'</td><td>'+rp(o.fee_rp)+'</td></tr>').join(''):
-'<tr><td>Belum ada order. Bot hanya membeli saat close menembus tertinggi 120 candle.</td></tr>';
-$('kaki').textContent='Dibuat oleh hitung_ulang.py dari data_bot/export_log_mentah.json pada '+D.dibuat+'. Semua angka dihitung ulang dari log, tidak ada yang ditulis manual.';
+const rows=[['Return total',pf(b.return_total,2),pf(f.return_total,2),pf(w.return_total,2)],['CAGR',pf(b.cagr,2),'tidak ditampilkan','N/A'],['Maximum drawdown',pf(b.mdd,2),pf(f.mdd,2),pf(w.mdd,2)],['Jumlah trade',nf(b.n_trade),nf(f.n_trade),w.n_trade==null?'N/A':nf(w.n_trade)],['Win rate',pf(b.win_rate),pf(f.win_rate),pf(w.win_rate)],['Profit factor',nf(b.profit_factor,2),nf(f.profit_factor,2),nf(w.profit_factor,2)],['Rata-rata untung per trade',rp(b.rata_untung),rp(f.rata_untung),rp(w.rata_untung)],['Rata-rata rugi per trade',rp(b.rata_rugi),rp(f.rata_rugi),rp(w.rata_rugi)],['Porsi biaya terhadap laba kotor',pf(b.porsi_biaya),pf(f.porsi_biaya),pf(w.porsi_biaya)],['Buy and hold BTC/IDR',pf(D.backtest.btc_buy_hold,2),pf(f.benchmark_btc_buy_hold,2),pf(j.btc_buy_hold,2)]];
+const two=(a,c)=>tr([a,c]);
+$('pages').innerHTML=
+'<section class="page" id="overview"><div class="phead"><div><h1>Backtest vs forward test</h1><div class="sub">Bot dry run Indodax, '+Object.keys(D.spread).length+' pasangan IDR, timeframe 4 jam.</div></div></div><div class="chips">'+chip('Freeze',D.freeze)+chip('Forward mulai',D.forward_mulai)+chip('Log sampai',D.forward_akhir)+chip('Hash konfigurasi',D.cfg_hash)+'</div>'+
+'<h3>Backtest penuh</h3><div class="grid g4">'+card('Return total',pf(b.return_total,2),'CAGR '+pf(b.cagr,2),cls(b.return_total))+card('Max drawdown',pf(b.mdd,2),'Buy and hold BTC '+pf(D.backtest.btc_buy_hold,2),'neg')+card('Profit factor',nf(b.profit_factor,2),'Win rate '+pf(b.win_rate))+card('Jumlah trade',nf(b.n_trade),'Porsi biaya '+pf(b.porsi_biaya))+'</div>'+
+'<h3>Forward test</h3><div class="grid g4">'+card('Return total',pf(f.return_total,2),'MDD '+pf(f.mdd,2))+card('Jumlah trade',nf(f.n_trade),f.n_trade?'Profit factor '+nf(f.profit_factor,2):'Belum ada order')+card('Uptime',pf(f.uptime),f.candle_tepat+' dari '+f.candle_total+' candle')+card('Error API',nf(f.error_api),'Kill switch: '+f.kill_switch_dipakai+' event')+'</div></section>'+
+'<section class="page" id="kurva"><h2 style="margin-top:0">Kurva ekuitas backtest</h2><div class="card"><svg class="ch" id="gb" viewBox="0 0 720 240"></svg><div class="s" id="cb" style="margin-top:8px"></div></div>'+
+'<h2>Ekuitas harian forward test</h2><div class="card"><svg class="ch" id="gf" viewBox="0 0 720 180"></svg></div>'+
+'<h2>Ringkasan metrik</h2>'+tbl(['Metrik','Backtest penuh','Forward test','Backtest di jendela forward'],rows.map(tr))+'<div class="s" style="margin-top:8px">Kolom ketiga menjalankan ulang backtest pada jendela candle yang sama dengan forward test. CAGR forward tidak ditampilkan karena periodenya terlalu pendek.</div></section>'+
+'<section class="page" id="cocok"><h2 style="margin-top:0">Kecocokan sinyal backtest dan forward</h2><div class="ban '+(ok?'ok':'no')+'">'+(ok?'Sinyal dan harga close cocok seluruhnya pada jendela ini':'Ada selisih: '+(j.selisih.length?esc(j.selisih.join('; ')):'lihat tabel'))+'</div>'+
+tbl(['Pemeriksaan','Hasil'],[two('Jendela forward (candle 4 jam, UTC)',j.dari+' sampai '+j.sampai),two('Candle forward yang ada di data backtest',j.close_total+' dari '+j.bar_forward),two('Harga close identik',j.close_cocok+' dari '+j.close_total),two('Sinyal forward test',j.sinyal_forward),two('Sinyal backtest di jendela yang sama',j.sinyal_backtest),two('Sinyal identik candle demi candle',j.sinyal_identik),two('Candle terlewat oleh bot',j.bar_terlewat)])+'</section>'+
+'<section class="page" id="ops"><h2 style="margin-top:0">Panel operasional</h2>'+tbl(['Indikator','Nilai'],[two('Uptime (candle terproses tepat waktu)',pf(f.uptime)+' ('+f.candle_tepat+' dari '+f.candle_total+')'),two('Panggilan terlaksana dari terjadwal',f.panggilan_terlaksana+' dari '+f.panggilan_terjadwal),two('Error API',f.error_api),two('Pemakaian kill switch (event)',f.kill_switch_dipakai),two('Posisi terbuka',(f.posisi_terbuka||[]).join(', ')||'tidak ada')])+'</section>'+
+'<section class="page" id="spread"><h2 style="margin-top:0">Spread yang dipakai backtest dan yang terukur</h2>'+tbl(['Pasangan','Backtest (%)','Median snapshot (%)','Jumlah snapshot'],Object.entries(D.spread).map(([k,v])=>tr([k,nf(v.backtest_pct,4),nf(v.snapshot_median_pct,4),v.n_snapshot])))+'</section>'+
+'<section class="page" id="order"><h2 style="margin-top:0">Order simulasi forward test</h2>'+(D.forward.orders.length?tbl(['Waktu','Pair','Sisi','Qty','Bid','Ask','Fill','Selisih vs sinyal %','Fee'],D.forward.orders.map(o=>tr([o.waktu,o.pair,o.sisi,nf(o.qty,6),nf(o.best_bid),nf(o.best_ask),nf(o.harga_fill),nf(o.selisih_vs_sinyal_pct,4),rp(o.fee_rp)]))):'<div class="card sub">Belum ada order. Bot hanya membeli saat close menembus tertinggi 120 candle.</div>')+
+'<div class="foot">Dibuat oleh hitung_ulang.py dari data_bot/export_log_mentah.json pada '+D.dibuat+'. Semua angka dihitung ulang dari log, tidak ada yang ditulis manual.</div></section>';
+const eq=D.backtest.equity,ys=eq.map(q=>q[1]),eh=f.equity_harian;
+chart('gb',eq,BC,{ref:1e8,fmt:v=>'Rp '+nf(v/1e6,0)+' jt',x:[[0,D.backtest.periode[0].slice(0,10),'start'],[1,D.backtest.periode[1].slice(0,10),'end']]});
+$('cb').textContent='Ekuitas akhir '+rp(b.ekuitas_akhir)+' dari modal Rp 100.000.000. Tertinggi '+rp(Math.max(...ys))+', terendah '+rp(Math.min(...ys))+'.';
+chart('gf',eh,FC,{dots:1,fmt:v=>'Rp '+nf(v/1e6,2)+' jt',x:eh.map((q,i)=>[eh.length>1?i/(eh.length-1):0,q[0],i==0?'start':(i==eh.length-1?'end':'middle')])});
+const bt=[...document.querySelectorAll('#menu button')];
+bt.forEach(x=>x.onclick=()=>$(x.dataset.p).scrollIntoView({behavior:'smooth'}));
+function spy(){let k=0;PAGES.forEach((p,i)=>{if($(p[0]).getBoundingClientRect().top<150)k=i});bt.forEach((x,i)=>x.classList.toggle('on',i==k))}
+addEventListener('scroll',spy,{passive:true});spy();
 </script></body></html>
