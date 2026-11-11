@@ -51,6 +51,7 @@ Tidak ada perubahan aturan, parameter, maupun universe sejak freeze. Hash konfig
 - 9 Nov 2026: memperbaiki catatan penyebab kegagalan uji koneksi (HTTP 401 dan 308), tanpa mengubah kode.
 - 10 Nov 2026: memperbarui tampilan dashboard_template.html (hanya tampilan, perhitungan tidak berubah), tanpa mengubah kode bot.
 - 11 Nov 2026: memperbarui hitung_ulang.py agar spread backtest memakai snapshot sampai freeze (8 Nov 2026 10.44 WIB) sehingga hasil backtest tidak bergeser; tidak mengubah kode bot.
+- 11 Nov 2026: menambah BUKTI_FREEZE.txt berisi hash dan waktu commit freeze, tanpa mengubah kode bot.
   
 Catatan: 1-8 Nov 2026 adalah uji coba (bot lama harian di GitHub Actions dan uji koneksi), bukan bagian forward test. Pada uji koneksi sebelum forward test, panggilan ke Vercel gagal HTTP 401 karena CRON_SECRET di GitHub tidak sama dengan di Vercel, lalu HTTP 308 karena alamat URL; keduanya baru teratasi pada 8 Nov. Jadwal GitHub Actions juga sering terlewat, sehingga ditambahkan penjadwal cron-job.org.
 8 Nov 2026 10.41 WIB: kill switch terpicu tidak sengaja saat uji (workflow kontrol), tanpa order. Data uji dihapus dengan reset. Forward test tercatat mulai dari event mulai setelah reset.
