@@ -14,7 +14,7 @@ Angka forward test dihitung oleh api/_metrik.py, fungsi yang sama dengan /api/da
 Backtest dijalankan ulang oleh backtest.py, yang memakai fungsi sinyal sama dengan bot (api/_strategi.py).
 Candle yang belum tertutup pada saat log terakhir dibuang, sesuai aturan soal.
 """
-import os, sys, re, json, statistics, datetime as dt
+import os, sys, re, csv, json, statistics, datetime as dt
 
 AKAR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(AKAR, "api"))
@@ -24,6 +24,19 @@ import _metrik
 import backtest as B
 
 WIB = dt.timezone(dt.timedelta(hours=7))
+
+# Spread dan slippage backtest dibekukan: hanya snapshot yang terkumpul sampai waktu freeze (README: 8 Nov 2026 10.44 WIB = 03.44 UTC).
+# Tanpa batas ini, hasil backtest bergeser setiap kali snapshots.csv bertambah selama forward test.
+BATAS_SNAPSHOT_UTC = "2026-11-08 03:44:00"
+
+
+def spread_beku(path, universe, batas=BATAS_SNAPSHOT_UTC):
+    rows = {}
+    if os.path.exists(path):
+        for r in csv.DictReader(open(path)):
+            if r["pair"] in universe and r["spread_pct"] and r["waktu_utc"] <= batas:
+                rows.setdefault(r["pair"], []).append((float(r["spread_pct"]), float(r["slip_beli_pct"] or 0), float(r["slip_jual_pct"] or 0)))
+    return {p: (statistics.median(x[0] for x in v) / 100, statistics.median((x[1] + x[2]) / 2 for x in v) / 100) for p, v in rows.items()}
 
 
 def wib(ts):
@@ -50,7 +63,7 @@ def main():
     # 2) backtest penuh dari candle CSV (hanya candle yang sudah tertutup saat log terakhir)
     bars = B.muat(os.path.join(AKAR, "data_4h"), CFG["universe"])
     bars = {p: [b for b in bs if b["time"] + tf <= akhir_log] for p, bs in bars.items()}
-    be = B.spread_dari_snapshot(os.path.join(AKAR, "data_bot", "snapshots.csv"), CFG["universe"])
+    be = spread_beku(os.path.join(AKAR, "data_bot", "snapshots.csv"), CFG["universe"])
     h = B.jalankan(bars, CFG, be)
     bt = B.metrik(h)
     eq = h["equity"]
