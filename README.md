@@ -52,6 +52,29 @@ Tidak ada perubahan aturan, parameter, maupun universe sejak freeze. Hash konfig
 - 10 Nov 2026: memperbarui tampilan dashboard_template.html (hanya tampilan, perhitungan tidak berubah), tanpa mengubah kode bot.
 - 11 Nov 2026: memperbarui hitung_ulang.py agar spread backtest memakai snapshot sampai freeze (8 Nov 2026 10.44 WIB) sehingga hasil backtest tidak bergeser; tidak mengubah kode bot.
 - 11 Nov 2026: menambah BUKTI_FREEZE.txt berisi hash dan waktu commit freeze, tanpa mengubah kode bot.
+- 12 Nov 2026: menambah bagian Sumber fee dan minimum order, Bukti risk management, dan Catatan data backtest di README (hanya dokumentasi), tanpa mengubah kode bot.
   
 Catatan: 1-8 Nov 2026 adalah uji coba (bot lama harian di GitHub Actions dan uji koneksi), bukan bagian forward test. Pada uji koneksi sebelum forward test, panggilan ke Vercel gagal HTTP 401 karena CRON_SECRET di GitHub tidak sama dengan di Vercel, lalu HTTP 308 karena alamat URL; keduanya baru teratasi pada 8 Nov. Jadwal GitHub Actions juga sering terlewat, sehingga ditambahkan penjadwal cron-job.org.
 8 Nov 2026 10.41 WIB: kill switch terpicu tidak sengaja saat uji (workflow kontrol), tanpa order. Data uji dihapus dengan reset. Forward test tercatat mulai dari event mulai setelah reset.
+
+## Sumber fee dan minimum order
+Fee taker all-in (sudah termasuk pajak dan CFX fee), tarif berlaku sejak 1 Oktober 2026, pasar IDR mode PRO:
+- Halaman resmi Rincian Biaya Transaksi di INDODAX, https://help.indodax.com/hc/id/articles/4416646599705-Rincian-Biaya-Transaksi-di-INDODAX, diakses 12 Nov 2026: beli 0,20555% (service fee 0,20%, pajak 0%, CFX fee 0,00555%) dan jual 0,41555% (service fee 0,20%, pajak 0,21%, CFX fee 0,00555%). Angka ini dipakai bot sebagai fee_beli dan fee_jual di api/_config.py.
+- API publik https://indodax.com/api/pairs, diakses 12 Nov 2026: trade_fee_percent_taker = 0,2% untuk BTC/IDR, ETH/IDR, XRP/IDR, DOGE/IDR, dan ADA/IDR. Angka ini hanya service fee, belum termasuk pajak dan CFX fee, sehingga lebih murah daripada angka halaman resmi.
+- Aplikasi Indodax, IDR Market PRO, diakses 1 Nov 2026: angka sama dengan halaman resmi.
+
+Bot memakai tarif yang lebih mahal antara fee di api/_config.py dan trade_fee_percent_taker dari /api/pairs yang dibaca setiap panggilan, dan kedua angka dicatat di setiap order. Karena angka halaman resmi lebih mahal, itulah yang berlaku.
+
+Minimum order: trade_min_base_currency di /api/pairs = Rp10.000 (diakses 12 Nov 2026). Halaman resmi yang sama menyebut order langsung di mode Pro minimal Rp25.000, dan order Pro Rp10.000 sampai Rp24.999 diproses lewat INDODAX Lite. Bot memakai yang lebih ketat, yaitu Rp25.000 (min_order_rp di api/_config.py).
+
+## Bukti risk management di kode dan log
+Semua ada di api/_bot.py (nomor baris sekitar):
+- Batas jumlah posisi dan ukuran per posisi: maks_posisi 5 dan sizing ekuitas dibagi 5 (api/_config.py).
+- Daily loss limit 5% pada hari WIB: baris 209. Bot berhenti membuka posisi baru sampai hari berikutnya. Belum terpicu karena belum ada posisi.
+- Kill switch tanpa deploy ulang: baris 122 dan 246-247. Terbukti di log: dua event kill pada 9 Nov 2026 (aktif 04.01 UTC, nonaktif 04.02 UTC).
+- Retry terbatas dan penanganan error API: baris 26-32, setiap kegagalan dicatat sebagai event error. Belum terpicu karena error_api 0.
+- Idempotency per candle: baris 154, dan kunci panggilan di baris 88. Terbukti di log: dua penjadwal memanggil bot pada candle yang sama, hanya satu panggilan yang memproses (bar_diproses 5, panggilan lain 0).
+- Validasi data (candle usang lebih dari 2 kali timeframe, spread bid-ask lebih dari 2%, minimum order): baris 150, 218, dan 262.
+
+## Catatan data backtest
+tarik_data.py mengambil candle yang sedang berjalan sebagai elemen terakhir. hitung_ulang.py membuang candle yang belum tertutup sebelum menghitung backtest, sesuai aturan soal. Spread dan slippage backtest dibekukan pada snapshot sampai freeze (8 Nov 2026 10.44 WIB).
