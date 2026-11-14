@@ -53,6 +53,9 @@ Tidak ada perubahan aturan, parameter, maupun universe sejak freeze. Hash konfig
 - 11 Nov 2026: memperbarui hitung_ulang.py agar spread backtest memakai snapshot sampai freeze (8 Nov 2026 10.44 WIB) sehingga hasil backtest tidak bergeser; tidak mengubah kode bot.
 - 11 Nov 2026: menambah BUKTI_FREEZE.txt berisi hash dan waktu commit freeze, tanpa mengubah kode bot.
 - 12 Nov 2026: menambah bagian Sumber fee dan minimum order, Bukti risk management, dan Catatan data backtest di README (hanya dokumentasi), tanpa mengubah kode bot.
+- 14 Nov 2026: penjadwal dihentikan setelah forward test selesai. Job cron-job.org dinonaktifkan (eksekusi terakhir 13.30 WIB), satu tick manual terakhir (#57) dijalankan sekitar 13.46 WIB, lalu workflow tick dan snapshot-orderbook dinonaktifkan.
+- 14 Nov 2026: CRON_SECRET diganti dengan nilai baru sebagai rotasi keamanan sebelum repositori dipublikasikan. Tidak berdampak pada forward test.
+- 14 Nov 2026: index.html (dashboard Vercel) diganti dengan versi baru yang hanya mengubah tampilan, data tetap dari /api/data. Tidak ada perubahan pada kode bot, strategi, parameter, maupun universe.
   
 Catatan: 1-8 Nov 2026 adalah uji coba (bot lama harian di GitHub Actions dan uji koneksi), bukan bagian forward test. Pada uji koneksi sebelum forward test, panggilan ke Vercel gagal HTTP 401 karena CRON_SECRET di GitHub tidak sama dengan di Vercel, lalu HTTP 308 karena alamat URL; keduanya baru teratasi pada 8 Nov. Jadwal GitHub Actions juga sering terlewat, sehingga ditambahkan penjadwal cron-job.org.
 8 Nov 2026 10.41 WIB: kill switch terpicu tidak sengaja saat uji (workflow kontrol), tanpa order. Data uji dihapus dengan reset. Forward test tercatat mulai dari event mulai setelah reset.
